@@ -7,6 +7,13 @@
         import { useSort } from '@table-library/react-table-library/sort';
 
     - see https://www.robinwieruch.de/react-table-sort/
+
+    - mui migration from V4 to V5 - https://mui.com/material-ui/migration/migration-v4/
+       npm install @mui/icons-material
+         or this :
+
+      npm install @mui/material @mui/styles
+      npm install @emotion/react @emotion/styled
 ====================================================
 Previous Task: 
     Enable users to select a row in the table by either clicking 
@@ -58,10 +65,10 @@ import { useSort,
    } from '@table-library/react-table-library/sort';
 
 //Sometimes we want to use custom sort icon
+import MaterialButton from '@mui/material/Button';
 import UnfoldMoreOutlinedIcon from '@mui/icons-material/UnfoldMoreOutlined';
 import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined';
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
-
 
 const list = [
   {
@@ -275,13 +282,24 @@ const App = () => {
     with React Table Library.
   */ 
 
+    const getIcon = (sortKey) => {
+      if (sort.state.sortKey === sortKey && sort.state.reverse) {
+        return <KeyboardArrowDownOutlinedIcon />;
+      }
   
+      if (sort.state.sortKey === sortKey && !sort.state.reverse) {
+        return <KeyboardArrowUpOutlinedIcon />;
+      }
+  
+      return <UnfoldMoreOutlinedIcon />;
+    };
   return (
       <Table data={data} theme={theme} select={select} sort={sort}> 
         {(tableList) => (
           <> 
             <Header>
               <HeaderRow>
+              
               <HeaderCell stiff>
                 <MaterialCheckbox
                   size="small"
@@ -291,6 +309,18 @@ const App = () => {
                   }
                   onChange={select.fns.onToggleAll}
                 />
+                <MaterialButton
+                  fullWidth
+                  style={{ justifyContent: 'flex-start' }}
+                  endIcon={getIcon('TASK')}
+                  onClick={() =>
+                    sort.fns.onToggleSort({
+                      sortKey: 'TASK',
+                    })
+                  }
+                >
+                  Task
+                </MaterialButton>
               </HeaderCell>                  
                 <HeaderCellSort sortKey="TASK">Task </HeaderCellSort>
                 <HeaderCellSort sortKey="DEADLINE">Deadline</HeaderCellSort>
