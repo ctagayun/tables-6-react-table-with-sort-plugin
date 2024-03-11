@@ -52,9 +52,16 @@ import {
   Cell,
 } from '@table-library/react-table-library/table';
 
+//Sort stuff
 import { useSort,
          HeaderCellSort,
    } from '@table-library/react-table-library/sort';
+
+//Sometimes we want to use custom sort icon
+import UnfoldMoreOutlinedIcon from '@mui/icons-material/UnfoldMoreOutlined';
+import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined';
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
+
 
 const list = [
   {
@@ -196,16 +203,33 @@ const App = () => {
      console.log(action, state);
   }
 
+  //Sort stuff
   //Initialize the useSort() hook then convert table
   //header columns to sortable header columns.
   //Next import HeaderCellSort
   //Next create sort functions for each sort key
+  //Sometimes users want a default sort state
   const sort = useSort(data,
     {
-      //onChange callback
+      //declaring TYPE as default sort state
+      state:{
+        sortKey: 'TYPE',
+        reverse: false,
+      },
+      //onChange callback function
       onChange: onSortChange, //Notifier to get the current sort from the table
-    }, {
-    sortFns: {
+    }, 
+    {
+    sortIcon: {
+      margin: '0px',
+      iconDefault: <UnfoldMoreOutlinedIcon />,
+      iconUp: <KeyboardArrowUpOutlinedIcon />,
+      iconDown: (
+        <KeyboardArrowDownOutlinedIcon />
+      ),
+    },  
+    sortFns:
+     {
       TASK: (array) =>
         array.sort((a, b) => a.name.localeCompare(b.name)),
       DEADLINE: (array) =>
@@ -214,8 +238,9 @@ const App = () => {
         array.sort((a, b) => a.type.localeCompare(b.type)),
       COMPLETE: (array) =>
         array.sort((a, b) => a.isComplete - b.isComplete),
+     }
     },
-  });
+  );
 
   //Notifier to get the current sort from the table
   //The onChange callback function gives you access to the action
