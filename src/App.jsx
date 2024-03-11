@@ -6,6 +6,7 @@
     - import hook:
         import { useSort } from '@table-library/react-table-library/sort';
 
+    - see https://www.robinwieruch.de/react-table-sort/
 ====================================================
 Previous Task: 
     Enable users to select a row in the table by either clicking 
@@ -23,6 +24,7 @@ Previous Task:
   Previous Task: 
     Enable users to select a row in the table by either clicking 
     the row or clicking a checkbox.
+
 */
 import * as React from 'react';
 import './App.css'
@@ -48,10 +50,11 @@ import {
   Body,
   Row,
   Cell,
-
 } from '@table-library/react-table-library/table';
-import { useSort } from '@table-library/react-table-library/sort';
 
+import { useSort,
+         HeaderCellSort,
+   } from '@table-library/react-table-library/sort';
 
 const list = [
   {
@@ -73,6 +76,20 @@ const list = [
     name: 'React',
     deadline: new Date(2020, 3, 8),
     type: 'LEARN',
+    isComplete: false,
+  },
+  {
+    id: '4',
+    name: 'Redux',
+    deadline: new Date(2023, 3, 8),
+    type: 'Install',
+    isComplete: false,
+  },
+  {
+    id: '5',
+    name: 'Angular',
+    deadline: new Date(2024, 5, 10),
+    type: 'Test',
     isComplete: false,
   }
 ];
@@ -99,6 +116,7 @@ const App = () => {
   //Nodes are the items in our list. In this example
   //"data" is prop to the Table component.
   const data = { nodes: list }; 
+
 
   //Using theme
   const theme = useTheme(THEME);
@@ -178,6 +196,34 @@ const App = () => {
      console.log(action, state);
   }
 
+  //Initialize the useSort() hook then convert table
+  //header columns to sortable header columns.
+  //Next import HeaderCellSort
+  //Next create sort functions for each sort key
+  const sort = useSort(data,
+    {
+      //onChange callback
+      onChange: onSortChange, //Notifier to get the current sort from the table
+    }, {
+    sortFns: {
+      TASK: (array) =>
+        array.sort((a, b) => a.name.localeCompare(b.name)),
+      DEADLINE: (array) =>
+        array.sort((a, b) => a.deadline - b.deadline),
+      TYPE: (array) =>
+        array.sort((a, b) => a.type.localeCompare(b.type)),
+      COMPLETE: (array) =>
+        array.sort((a, b) => a.isComplete - b.isComplete),
+    },
+  });
+
+  //Notifier to get the current sort from the table
+  //The onChange callback function gives you access to the action
+  //that trigered the sort and the current sort state
+  function onSortChange(action, state) {
+    console.log(action, state);
+  }
+
   /*Table component accepts {data} object as prop with
       "nodes property". Theme is another prop.
     First, the top-level checkbox in the header "<HeaderCellSelect />
@@ -203,8 +249,10 @@ const App = () => {
     The following example shows how to use Material UI components 
     with React Table Library.
   */ 
+
+  
   return (
-      <Table data={data} theme={theme} select={select}> 
+      <Table data={data} theme={theme} select={select} sort={sort}> 
         {(tableList) => (
           <> 
             <Header>
@@ -219,10 +267,10 @@ const App = () => {
                   onChange={select.fns.onToggleAll}
                 />
               </HeaderCell>                  
-                <HeaderCell>Task</HeaderCell>
-                <HeaderCell>Deadline</HeaderCell>
-                <HeaderCell>Type</HeaderCell>
-                <HeaderCell>Complete</HeaderCell>
+                <HeaderCellSort sortKey="TASK">Task </HeaderCellSort>
+                <HeaderCellSort sortKey="DEADLINE">Deadline</HeaderCellSort>
+                <HeaderCellSort sortKey="TYPE">Type</HeaderCellSort>
+                <HeaderCellSort sortKey="COMPLETE">Complete</HeaderCellSort>
               </HeaderRow>
             </Header>
             <Body>
